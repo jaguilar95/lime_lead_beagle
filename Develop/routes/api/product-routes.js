@@ -8,7 +8,9 @@ router.get("/", async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
   try {
-    const dbData = await Product.findAll();
+    const dbData = await Product.findAll({
+      include: [{ model: Category }, { model: Tag }],
+    });
 
     res.json(dbData);
   } catch (err) {
@@ -122,8 +124,25 @@ router.put("/:id", (req, res) => {
     });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   // delete one product by its `id` value
+  try {
+    const dbResponse = await Product.destroy({
+      where: { id: req.params.id },
+    });
+
+    if (!dbResponse) {
+      res.status(404).json({ message: "No product was found with this ID " });
+      return;
+    }
+
+    res.json({
+      message: `Product with ID #${req.params.id} successfully deleted`,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 module.exports = router;
