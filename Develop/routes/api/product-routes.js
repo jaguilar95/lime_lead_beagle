@@ -6,9 +6,9 @@ const { Product, Category, Tag, ProductTag } = require("../../models");
 // get all products
 router.get("/", async (req, res) => {
   // find all products
-  // be sure to include its associated Category and Tag data
   try {
     const dbData = await Product.findAll({
+      // be sure to include its associated Category and Tag data
       include: [{ model: Category }, { model: Tag }],
     });
 
@@ -38,6 +38,7 @@ router.get("/:id", async (req, res) => {
       ],
     });
 
+    // validate product exists
     if (!dbData) {
       res.status(404).json({ message: "No product found with this ID" });
       return;
@@ -131,6 +132,7 @@ router.delete("/:id", async (req, res) => {
       where: { id: req.params.id },
     });
 
+    // validate product exists
     if (!dbResponse) {
       res.status(404).json({ message: "No product was found with this ID " });
       return;
